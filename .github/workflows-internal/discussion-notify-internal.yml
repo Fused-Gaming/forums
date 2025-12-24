@@ -1,0 +1,94 @@
+# Internal Discussion Notifications
+# Copy this file to fused-gaming/discussions/.github/workflows/
+
+name: Internal Discussion Notifications
+
+on:
+  discussion:
+    types: [created, answered]
+  discussion_comment:
+    types: [created]
+
+jobs:
+  notify-internal:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Internal Discord
+        uses: actions/github-script@v7
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_INTERNAL }}
+        with:
+          script: |
+            const discussion = context.payload.discussion;
+            if (!discussion) return;
+            
+            const webhookUrl = process.env.DISCORD_WEBHOOK;
+            if (!webhookUrl) {
+              console.log('No webhook URL configured');
+              return;
+            }
+            
+            const category = discussion.category;
+            const categorySlug = category.slug || category.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            
+            // Categories to notify on
+            const notifyCategories = [
+              'standup', 'security', 'finance', 'investor', 
+              'legal', 'strategy', 'partnerships'
+            ];
+            
+            const shouldNotify = notifyCategories.some(function(c) {
+              return categorySlug.includes(c);
+            });
+            
+            if (!shouldNotify) {
+              console.log('Category ' + categorySlug + ' not in notify list');
+              return;
+            }
+            
+            // Color mapping
+            var embedColor = 0x5865F2;
+            if (categorySlug.includes('security')) embedColor = 0xb60205;
+            else if (categorySlug.includes('finance') || categorySlug.includes('investor')) embedColor = 0x6f42c1;
+            else if (categorySlug.includes('legal')) embedColor = 0xfbca04;
+
+            const description = (discussion.body || '').slice(0, 300);
+            const truncatedDesc = description.length >= 300 ? description + '...' : description;
+            
+            // Priority mention for security/urgent
+            var mentionText = '';
+            if (categorySlug.includes('security')) {
+              mentionText = '🚨 **Security Team Attention Required**\n\n';
+            } else if (categorySlug.includes('investor') || categorySlug.includes('finance')) {
+              mentionText = '💰 **Finance/Leadership Review**\n\n';
+            }
+            
+            const embed = {
+              title: (category.emoji || '📋') + ' ' + discussion.title,
+              url: discussion.html_url,
+              description: mentionText + truncatedDesc,
+              color: embedColor,
+              fields: [
+                { name: 'Category', value: category.name, inline: true },
+                { name: 'Author', value: '@' + discussion.user.login, inline: true }
+              ],
+              footer: {
+                text: 'FUSED GAMING Internal'
+              },
+              timestamp: new Date().toISOString()
+            };
+
+            const response = await fetch(webhookUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                username: 'FUSED Internal',
+                embeds: [embed]
+              })
+            });
+            
+            if (!response.ok) {
+              console.log('Discord webhook failed: ' + response.status);
+            } else {
+              console.log('Internal notification sent for discussion #' + discussion.number);
+            }

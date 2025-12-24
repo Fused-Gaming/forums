@@ -1,0 +1,256 @@
+{
+  "public": {
+    "repo": "fused-gaming/forums",
+    "discord_webhook_secret": "DISCORD_WEBHOOK_PUBLIC",
+    "categories": [
+      {
+        "name": "Announcements",
+        "emoji": "📢",
+        "description": "Official news, releases, and partnerships",
+        "slug": "announcements",
+        "is_answerable": false,
+        "maintainers_only": true,
+        "notify_discord": true,
+        "subcategories": [
+          { "name": "Releases", "emoji": "🚀" },
+          { "name": "Partnerships", "emoji": "🤝" },
+          { "name": "Events", "emoji": "📅" }
+        ]
+      },
+      {
+        "name": "Investor Relations",
+        "emoji": "📈",
+        "description": "Progress updates, milestones, and transparency reports",
+        "slug": "investor-relations",
+        "is_answerable": false,
+        "maintainers_only": true,
+        "notify_discord": true,
+        "subcategories": [
+          { "name": "Quarterly Updates", "emoji": "📊" },
+          { "name": "Milestones", "emoji": "🎯" },
+          { "name": "Grant Progress", "emoji": "💰" }
+        ]
+      },
+      {
+        "name": "Ideas & Feedback",
+        "emoji": "💡",
+        "description": "Feature requests, suggestions, and improvements",
+        "slug": "ideas-feedback",
+        "is_answerable": false,
+        "maintainers_only": false,
+        "notify_discord": true,
+        "subcategories": [
+          { "name": "Feature Requests", "emoji": "✨" },
+          { "name": "UX Improvements", "emoji": "🎨" },
+          { "name": "Integration Ideas", "emoji": "🔗" }
+        ]
+      },
+      {
+        "name": "Q&A",
+        "emoji": "❓",
+        "description": "Questions, help, and troubleshooting",
+        "slug": "q-a",
+        "is_answerable": true,
+        "maintainers_only": false,
+        "notify_discord": false,
+        "subcategories": [
+          { "name": "Getting Started", "emoji": "🚀" },
+          { "name": "Wallet & Transactions", "emoji": "💳" },
+          { "name": "Smart Contracts", "emoji": "📜" },
+          { "name": "API & Integration", "emoji": "🔌" }
+        ]
+      },
+      {
+        "name": "General",
+        "emoji": "🎮",
+        "description": "Community chat and off-topic discussions",
+        "slug": "general",
+        "is_answerable": false,
+        "maintainers_only": false,
+        "notify_discord": false,
+        "subcategories": [
+          { "name": "Introductions", "emoji": "👋" },
+          { "name": "Off-Topic", "emoji": "💬" },
+          { "name": "Gaming", "emoji": "🕹️" }
+        ]
+      },
+      {
+        "name": "Bug Reports",
+        "emoji": "🐛",
+        "description": "Report issues and problems",
+        "slug": "bug-reports",
+        "is_answerable": true,
+        "maintainers_only": false,
+        "notify_discord": true,
+        "subcategories": [
+          { "name": "GambaReload", "emoji": "🎰" },
+          { "name": "Stablecoin Aggregators", "emoji": "💱" },
+          { "name": "Wallet", "emoji": "👛" },
+          { "name": "Other", "emoji": "📦" }
+        ]
+      },
+      {
+        "name": "Showcase",
+        "emoji": "🏆",
+        "description": "Community creations, wins, and highlights",
+        "slug": "showcase",
+        "is_answerable": false,
+        "maintainers_only": false,
+        "notify_discord": true,
+        "subcategories": [
+          { "name": "Projects", "emoji": "🛠️" },
+          { "name": "Wins", "emoji": "🎉" },
+          { "name": "Tutorials", "emoji": "📚" }
+        ]
+      },
+      {
+        "name": "Polls & Roadmap",
+        "emoji": "🗳️",
+        "description": "Community voting and priority input",
+        "slug": "polls-roadmap",
+        "is_answerable": false,
+        "maintainers_only": true,
+        "notify_discord": true,
+        "subcategories": []
+      }
+    ]
+  },
+  "internal": {
+    "repo": "fused-gaming/discussions",
+    "discord_webhook_secret": "DISCORD_WEBHOOK_INTERNAL",
+    "categories": [
+      {
+        "name": "Standup & Updates",
+        "emoji": "📋",
+        "description": "Async standups and weekly updates",
+        "slug": "standup-updates",
+        "is_answerable": false,
+        "notify_discord": true,
+        "subcategories": [
+          { "name": "Daily Standups", "emoji": "☀️" },
+          { "name": "Weekly Updates", "emoji": "📅" },
+          { "name": "Blockers", "emoji": "🚧" }
+        ]
+      },
+      {
+        "name": "Security & Incidents",
+        "emoji": "🔐",
+        "description": "Vulnerability reports, incident response, audits",
+        "slug": "security-incidents",
+        "is_answerable": false,
+        "notify_discord": true,
+        "subcategories": [
+          { "name": "Vulnerabilities", "emoji": "⚠️" },
+          { "name": "Incidents", "emoji": "🚨" },
+          { "name": "Audits", "emoji": "🔍" },
+          { "name": "Postmortems", "emoji": "📝" }
+        ]
+      },
+      {
+        "name": "Finance & Grants",
+        "emoji": "💰",
+        "description": "Budget, grant applications, runway",
+        "slug": "finance-grants",
+        "is_answerable": false,
+        "notify_discord": true,
+        "subcategories": [
+          { "name": "Budgets", "emoji": "📊" },
+          { "name": "Grant Applications", "emoji": "📝" },
+          { "name": "Funding Updates", "emoji": "💵" }
+        ]
+      },
+      {
+        "name": "Investor Pipeline",
+        "emoji": "📈",
+        "description": "Deal flow, investor meetings, term sheets",
+        "slug": "investor-pipeline",
+        "is_answerable": false,
+        "notify_discord": true,
+        "subcategories": [
+          { "name": "Meetings", "emoji": "🤝" },
+          { "name": "Term Sheets", "emoji": "📄" },
+          { "name": "Due Diligence", "emoji": "🔎" }
+        ]
+      },
+      {
+        "name": "Architecture & Technical",
+        "emoji": "🏗️",
+        "description": "System design, infrastructure decisions",
+        "slug": "architecture-technical",
+        "is_answerable": false,
+        "notify_discord": false,
+        "subcategories": [
+          { "name": "RFCs", "emoji": "📋" },
+          { "name": "Architecture", "emoji": "🏛️" },
+          { "name": "Infrastructure", "emoji": "🖥️" },
+          { "name": "Code Review", "emoji": "👀" }
+        ]
+      },
+      {
+        "name": "Legal & Compliance",
+        "emoji": "📜",
+        "description": "Contracts, TOS versioning, NDAs",
+        "slug": "legal-compliance",
+        "is_answerable": false,
+        "notify_discord": true,
+        "subcategories": [
+          { "name": "Contracts", "emoji": "📝" },
+          { "name": "Compliance", "emoji": "✅" },
+          { "name": "NDAs", "emoji": "🔒" }
+        ]
+      },
+      {
+        "name": "Strategy & Roadmap",
+        "emoji": "🎯",
+        "description": "Long-term planning, competitive analysis",
+        "slug": "strategy-roadmap",
+        "is_answerable": false,
+        "notify_discord": true,
+        "subcategories": [
+          { "name": "Planning", "emoji": "📅" },
+          { "name": "Competitive Intel", "emoji": "🔍" },
+          { "name": "OKRs", "emoji": "🎯" }
+        ]
+      },
+      {
+        "name": "Partnerships",
+        "emoji": "🤝",
+        "description": "Partner discussions, integration planning",
+        "slug": "partnerships",
+        "is_answerable": false,
+        "notify_discord": true,
+        "subcategories": [
+          { "name": "Outreach", "emoji": "📧" },
+          { "name": "Negotiations", "emoji": "💬" },
+          { "name": "Integrations", "emoji": "🔗" }
+        ]
+      },
+      {
+        "name": "Drafts & Reviews",
+        "emoji": "📝",
+        "description": "Pre-publish review of announcements and docs",
+        "slug": "drafts-reviews",
+        "is_answerable": false,
+        "notify_discord": false,
+        "subcategories": [
+          { "name": "Blog Drafts", "emoji": "✍️" },
+          { "name": "Announcement Drafts", "emoji": "📢" },
+          { "name": "Doc Reviews", "emoji": "📖" }
+        ]
+      },
+      {
+        "name": "Watercooler",
+        "emoji": "💬",
+        "description": "Team chat, off-topic, morale",
+        "slug": "watercooler",
+        "is_answerable": false,
+        "notify_discord": false,
+        "subcategories": [
+          { "name": "Random", "emoji": "🎲" },
+          { "name": "Wins & Celebrations", "emoji": "🎉" },
+          { "name": "Recommendations", "emoji": "⭐" }
+        ]
+      }
+    ]
+  }
+}

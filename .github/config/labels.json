@@ -1,0 +1,148 @@
+{
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a",
+      "scope": "public"
+    },
+    {
+      "name": "feat.",
+      "description": "New feature or request",
+      "color": "a2eeef",
+      "scope": "public"
+    },
+    {
+      "name": "fix",
+      "description": "Potential fix for issue",
+      "color": "7057ff",
+      "scope": "public"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca",
+      "scope": "public"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3",
+      "scope": "public"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672",
+      "scope": "public"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7",
+      "scope": "public"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669",
+      "scope": "public"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff",
+      "scope": "public"
+    },
+    {
+      "name": "other",
+      "description": "Other label issue that is not otherwise categorized",
+      "color": "E3FAD7",
+      "scope": "public"
+    },
+    {
+      "name": "front-end",
+      "description": "Front end and design team",
+      "color": "73BEBE",
+      "scope": "both"
+    },
+    {
+      "name": "back-end",
+      "description": "Back end storage team",
+      "color": "A37B59",
+      "scope": "both"
+    },
+    {
+      "name": "devops",
+      "description": "DevOps engineering",
+      "color": "1A8754",
+      "scope": "both"
+    },
+    {
+      "name": "project-manager",
+      "description": "Project manager review",
+      "color": "2438B4",
+      "scope": "internal"
+    },
+    {
+      "name": "investor-update",
+      "description": "Investor relations content",
+      "color": "6f42c1",
+      "scope": "public"
+    },
+    {
+      "name": "confirmed",
+      "description": "Confirmed bug, ready for issue conversion",
+      "color": "0e8a16",
+      "scope": "both"
+    },
+    {
+      "name": "needs-info",
+      "description": "Waiting for more information from author",
+      "color": "fbca04",
+      "scope": "public"
+    },
+    {
+      "name": "community-highlight",
+      "description": "Featured community contribution",
+      "color": "ff69b4",
+      "scope": "public"
+    },
+    {
+      "name": "security",
+      "description": "Security-related discussion",
+      "color": "b60205",
+      "scope": "both"
+    },
+    {
+      "name": "priority-high",
+      "description": "High priority item",
+      "color": "b60205",
+      "scope": "internal"
+    },
+    {
+      "name": "priority-medium",
+      "description": "Medium priority item",
+      "color": "fbca04",
+      "scope": "internal"
+    },
+    {
+      "name": "priority-low",
+      "description": "Low priority item",
+      "color": "0e8a16",
+      "scope": "internal"
+    },
+    {
+      "name": "blocked",
+      "description": "Blocked by external dependency",
+      "color": "b60205",
+      "scope": "internal"
+    },
+    {
+      "name": "in-progress",
+      "description": "Currently being worked on",
+      "color": "1d76db",
+      "scope": "internal"
+    }
+  ]
+}

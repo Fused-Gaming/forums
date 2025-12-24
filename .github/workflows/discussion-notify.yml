@@ -7,41 +7,148 @@ on:
     types: [created]
 
 jobs:
-  notify:
+  notify-public:
     runs-on: ubuntu-latest
     steps:
-      - name: Notify on high-priority discussions
+      - name: Checkout config
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/config
+
+      - name: Notify Discord (Public)
         uses: actions/github-script@v7
         env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_WEBHOOK_PUBLIC: ${{ secrets.DISCORD_WEBHOOK_PUBLIC }}
+        with:
+          script: |
+            const fs = require('fs');
+            const discussion = context.payload.discussion;
+            if (!discussion) return;
+            
+            const category = discussion.category;
+            const categorySlug = category.slug || category.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            const webhookUrl = process.env.DISCORD_WEBHOOK_PUBLIC;
+            
+            if (!webhookUrl) {
+              console.log('No webhook URL configured');
+              return;
+            }
+            
+            // Load config
+            let config = { notification_rules: { public: { notify_on: { discussion_created: [] } } } };
+            try {
+              const configPath = '.github/config/notifications.json';
+              if (fs.existsSync(configPath)) {
+                config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+              }
+            } catch (e) {
+              console.log('Could not load config, using defaults');
+            }
+            
+            const publicConfig = config.notification_rules.public;
+            const notifyCategories = publicConfig.notify_on.discussion_created || [];
+
+            // Check if this category should trigger notification
+            const shouldNotify = notifyCategories.some(function(c) {
+              return categorySlug.includes(c) || c.includes(categorySlug);
+            });
+            
+            if (!shouldNotify) {
+              console.log('Category ' + categorySlug + ' not in notify list, skipping');
+              return;
+            }
+            
+            // Get embed color from config or use default
+            const colors = publicConfig.embed_colors || {};
+            const embedColor = parseInt(colors[categorySlug] || colors.default || '0x57F287');
+            
+            const description = (discussion.body || '').slice(0, 300);
+            const truncatedDesc = description.length >= 300 ? description + '...' : description;
+            
+            const embed = {
+              title: category.emoji + ' ' + discussion.title,
+              url: discussion.html_url,
+              description: truncatedDesc,
+              color: embedColor,
+              fields: [
+                { name: 'Category', value: category.name, inline: true },
+                { name: 'Author', value: '@' + discussion.user.login, inline: true }
+              ],
+              footer: {
+                text: 'FUSED GAMING Community'
+              },
+              timestamp: new Date().toISOString()
+            };
+
+            const response = await fetch(webhookUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                username: 'FUSED Forums',
+                embeds: [embed]
+              })
+            });
+            
+            if (!response.ok) {
+              console.log('Discord webhook failed: ' + response.status);
+            } else {
+              console.log('Notification sent for discussion #' + discussion.number);
+            }
+
+  notify-internal-escalation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Escalate to Internal Discord
+        uses: actions/github-script@v7
+        env:
+          DISCORD_WEBHOOK_INTERNAL: ${{ secrets.DISCORD_WEBHOOK_INTERNAL }}
         with:
           script: |
             const discussion = context.payload.discussion;
-            const category = discussion.category.name.toLowerCase();
-            const webhookUrl = process.env.DISCORD_WEBHOOK;
+            if (!discussion) return;
             
-            const notifyCategories = ['bug', 'investor', 'security'];
-            const shouldNotify = notifyCategories.some(function(c) { return category.includes(c); });
+            const webhookUrl = process.env.DISCORD_WEBHOOK_INTERNAL;
+            if (!webhookUrl) return;
             
-            if (!shouldNotify || !webhookUrl) return;
+            const category = discussion.category;
+            const categoryName = category.name.toLowerCase();
+            const title = discussion.title.toLowerCase();
+            const body = (discussion.body || '').toLowerCase();
             
-            const description = (discussion.body || '').slice(0, 200) + '...';
-            const embedColor = category.includes('bug') ? 0xd73a4a : 0x0075ca;
+            // Escalate security, investor, or urgent items to internal
+            const escalatePatterns = ['security', 'vulnerability', 'urgent', 'critical', 'investor', 'legal'];
+            const shouldEscalate = escalatePatterns.some(function(p) {
+              return categoryName.includes(p) || title.includes(p) || body.includes(p);
+            });
+            
+            if (!shouldEscalate) {
+              console.log('No escalation needed');
+              return;
+            }
             
             const embed = {
-              title: 'New Discussion: ' + discussion.title,
+              title: '⚠️ [ESCALATION] ' + discussion.title,
               url: discussion.html_url,
-              description: description,
-              color: embedColor,
+              description: 'A public discussion may need internal attention.',
+              color: 0xb60205,
               fields: [
-                { name: 'Category', value: discussion.category.name, inline: true },
-                { name: 'Author', value: '@' + discussion.user.login, inline: true }
+                { name: 'Category', value: category.name, inline: true },
+                { name: 'Author', value: '@' + discussion.user.login, inline: true },
+                { name: 'Trigger', value: 'Auto-escalated based on content', inline: false }
               ],
+              footer: {
+                text: 'From Public Forums'
+              },
               timestamp: new Date().toISOString()
             };
 
             await fetch(webhookUrl, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ embeds: [embed] })
+              body: JSON.stringify({
+                username: 'FUSED Forums (Escalation)',
+                embeds: [embed]
+              })
             });
+            
+            console.log('Escalated discussion #' + discussion.number + ' to internal channel');

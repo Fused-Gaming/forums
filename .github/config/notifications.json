@@ -1,0 +1,59 @@
+{
+  "notification_rules": {
+    "public": {
+      "webhook_secret": "DISCORD_WEBHOOK_PUBLIC",
+      "notify_on": {
+        "discussion_created": ["announcements", "investor-relations", "ideas-feedback", "bug-reports", "showcase", "polls-roadmap"],
+        "discussion_answered": ["q-a", "bug-reports"],
+        "labels": ["security", "confirmed", "priority-high"]
+      },
+      "embed_colors": {
+        "announcements": "0x5865F2",
+        "investor-relations": "0x6f42c1",
+        "ideas-feedback": "0xa2eeef",
+        "bug-reports": "0xd73a4a",
+        "showcase": "0xff69b4",
+        "q-a": "0xd876e3",
+        "polls-roadmap": "0x0075ca",
+        "default": "0x57F287"
+      },
+      "channel_routing": {
+        "announcements": "announcements",
+        "investor-relations": "investor-relations",
+        "bug-reports": "bug-reports",
+        "default": "community-forum"
+      }
+    },
+    "internal": {
+      "webhook_secret": "DISCORD_WEBHOOK_INTERNAL",
+      "notify_on": {
+        "discussion_created": ["standup-updates", "security-incidents", "finance-grants", "investor-pipeline", "legal-compliance", "strategy-roadmap", "partnerships"],
+        "discussion_answered": [],
+        "labels": ["security", "priority-high", "blocked"]
+      },
+      "embed_colors": {
+        "standup-updates": "0x57F287",
+        "security-incidents": "0xb60205",
+        "finance-grants": "0x6f42c1",
+        "investor-pipeline": "0x6f42c1",
+        "architecture-technical": "0x1d76db",
+        "legal-compliance": "0xfbca04",
+        "strategy-roadmap": "0x0075ca",
+        "partnerships": "0x57F287",
+        "default": "0x5865F2"
+      },
+      "channel_routing": {
+        "security-incidents": "security-alerts",
+        "finance-grants": "finance",
+        "investor-pipeline": "investor-relations",
+        "default": "team-updates"
+      }
+    }
+  },
+  "mention_rules": {
+    "security-incidents": ["@security-team"],
+    "finance-grants": ["@finance-team"],
+    "investor-pipeline": ["@leadership"],
+    "priority-high": ["@on-call"]
+  }
+}
