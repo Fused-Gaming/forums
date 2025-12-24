@@ -11,8 +11,8 @@ Welcome to the official community hub for FUSED GAMING. This is where our commun
 |----------|------|
 | **Discussions** | [Start or join a conversation](https://github.com/Fused-Gaming/forums/discussions) |
 | **Wiki** | [Documentation & guides](https://github.com/Fused-Gaming/forums/wiki) |
-| **Discord** | [Join our Discord](https://discord.gg/fusedgaming) |
-| **Twitter/X** | [@FusedGaming](https://twitter.com/fusedgaming) |
+| **Discord** | [Join our Discord](https://discord.gg/YVxdRAReZV) |
+| **Twitter/X** | [@VLNLabs](https://twitter.com/VLNLabs) |
 
 ## 📂 Discussion Categories
 
@@ -65,8 +65,4 @@ Found a vulnerability? Please review our [Security Policy](SECURITY.md) for resp
 
 Public progress updates and milestones are posted in the [Investor Relations](https://github.com/Fused-Gaming/forums/discussions/categories/investor-relations) category.
 
-For due diligence materials and detailed financials, contact: investors@fusedgaming.com
-
----
-
-*Built with 🎮 by the FUSED GAMING team*
+For due diligence materials and detailed financials, contact: ir@vln.gg
