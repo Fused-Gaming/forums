@@ -1,0 +1,102 @@
+name: Discussion Triage & Moderation
+
+on:
+  discussion:
+    types: [created, labeled]
+  discussion_comment:
+    types: [created]
+
+permissions:
+  discussions: write
+  issues: write
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Bug Report Triage
+        if: contains(github.event.discussion.category.name, 'Bug')
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const discussion = context.payload.discussion;
+            const body = discussion.body || '';
+            
+            // Check for required information
+            const hasChain = /chain|network|ethereum|polygon|arbitrum|optimism/i.test(body);
+            const hasSteps = /steps|reproduce|how to/i.test(body);
+            const hasExpected = /expected|should|supposed to/i.test(body);
+            
+            const missing = [];
+            if (!hasChain) missing.push('blockchain/network');
+            if (!hasSteps) missing.push('steps to reproduce');
+            if (!hasExpected) missing.push('expected behavior');
+            
+            if (missing.length > 0) {
+              const helpMessage = `## 📋 Additional Information Needed
+
+Thanks for reporting this issue! To help us investigate faster, please provide:
+
+${missing.map(m => `- [ ] ${m}`).join('\n')}
+
+**Template:**
+\`\`\`
+Chain/Network: 
+Steps to reproduce:
+1. 
+2. 
+3. 
+Expected behavior:
+Actual behavior:
+Transaction hash (if applicable):
+\`\`\``;
+              
+              await github.graphql(`
+                mutation($discussionId: ID!, $body: String!) {
+                  addDiscussionComment(input: {discussionId: $discussionId, body: $body}) {
+                    comment { id }
+                  }
+                }
+              `, {
+                discussionId: discussion.node_id,
+                body: helpMessage
+              });
+            }
+
+      - name: Convert confirmed bug to issue
+        if: contains(github.event.label.name, 'confirmed')
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const discussion = context.payload.discussion;
+            
+            // Create an issue from the discussion
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[Bug] ${discussion.title}`,
+              body: `**Converted from Discussion #${discussion.number}**
+
+${discussion.body}
+
+---
+*Original discussion: ${discussion.html_url}*
+*Reported by: @${discussion.user.login}*`,
+              labels: ['bug']
+            });
+            
+            // Comment on discussion with link to issue
+            await github.graphql(`
+              mutation($discussionId: ID!, $body: String!) {
+                addDiscussionComment(input: {discussionId: $discussionId, body: $body}) {
+                  comment { id }
+                }
+              }
+            `, {
+              discussionId: discussion.node_id,
+              body: `## ✅ Bug Confirmed
+
+This has been converted to an issue for tracking: #${issue.data.number}
+
+We'll continue updates there. Thanks for reporting!`
+            });

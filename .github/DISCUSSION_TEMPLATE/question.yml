@@ -1,0 +1,44 @@
+title: "Question"
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## ❓ Ask a Question
+        Need help? We're here for you. Please search existing discussions first!
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Question Category
+      options:
+        - Getting Started / Setup
+        - Wallet / Transactions
+        - Smart Contracts
+        - Integration / API
+        - Tokenomics / Economics
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: Be as specific as possible
+      placeholder: How do I...
+    validations:
+      required: true
+
+  - type: textarea
+    id: tried
+    attributes:
+      label: What have you tried?
+      description: What steps have you already taken?
+      placeholder: I've tried...
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Relevant Details
+      description: Include any error messages, screenshots, or transaction hashes

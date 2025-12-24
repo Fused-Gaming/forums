@@ -1,0 +1,45 @@
+name: Discussion Notifications
+
+on:
+  discussion:
+    types: [created, answered]
+  discussion_comment:
+    types: [created]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify on high-priority discussions
+        uses: actions/github-script@v7
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        with:
+          script: |
+            const discussion = context.payload.discussion;
+            const category = discussion.category.name.toLowerCase();
+            const webhookUrl = process.env.DISCORD_WEBHOOK;
+            
+            // Only notify for certain categories
+            const notifyCategories = ['bug', 'investor', 'security'];
+            const shouldNotify = notifyCategories.some(c => category.includes(c));
+            
+            if (!shouldNotify || !webhookUrl) return;
+            
+            const embed = {
+              title: `New Discussion: ${discussion.title}`,
+              url: discussion.html_url,
+              description: (discussion.body || '').slice(0, 200) + '...',
+              color: category.includes('bug') ? 0xd73a4a : 0x0075ca,
+              fields: [
+                { name: 'Category', value: discussion.category.name, inline: true },
+                { name: 'Author', value: `@${discussion.user.login}`, inline: true }
+              ],
+              timestamp: new Date().toISOString()
+            };
+
+            await fetch(webhookUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ embeds: [embed] })
+            });

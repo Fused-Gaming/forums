@@ -1,0 +1,84 @@
+name: Stale Discussion Manager
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # Every Monday at 9am UTC
+  workflow_dispatch:
+
+permissions:
+  discussions: write
+
+jobs:
+  stale-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for stale discussions
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const STALE_DAYS = 30;
+            const CLOSE_DAYS = 60;
+            const now = new Date();
+            
+            // Query open discussions
+            const query = `
+              query($owner: String!, $repo: String!, $cursor: String) {
+                repository(owner: $owner, name: $repo) {
+                  discussions(first: 50, after: $cursor, states: OPEN) {
+                    pageInfo { hasNextPage, endCursor }
+                    nodes {
+                      id
+                      number
+                      title
+                      updatedAt
+                      category { name }
+                      comments { totalCount }
+                      answer { id }
+                    }
+                  }
+                }
+              }
+            `;
+
+            const discussions = await github.graphql(query, {
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+
+            for (const disc of discussions.repository.discussions.nodes) {
+              const updatedAt = new Date(disc.updatedAt);
+              const daysSinceUpdate = Math.floor((now - updatedAt) / (1000 * 60 * 60 * 24));
+              
+              // Skip announcements and answered Q&As
+              if (disc.category.name.toLowerCase().includes('announcement')) continue;
+              if (disc.answer) continue;
+              
+              // Mark as stale after STALE_DAYS
+              if (daysSinceUpdate >= STALE_DAYS && daysSinceUpdate < CLOSE_DAYS) {
+                const staleMessage = `## ⏰ This discussion appears to be inactive
+
+This discussion hasn't had any activity in ${daysSinceUpdate} days.
+
+**If your question was resolved:**
+- Please mark the best answer to help others find solutions
+
+**If you still need help:**
+- Reply with any additional details or updates
+- Consider rephrasing your question for clarity
+
+Discussions without activity for ${CLOSE_DAYS} days may be closed automatically.`;
+
+                await github.graphql(`
+                  mutation($discussionId: ID!, $body: String!) {
+                    addDiscussionComment(input: {discussionId: $discussionId, body: $body}) {
+                      comment { id }
+                    }
+                  }
+                `, {
+                  discussionId: disc.id,
+                  body: staleMessage
+                });
+                
+                console.log(`Marked discussion #${disc.number} as stale (${daysSinceUpdate} days)`);
+              }
+            }

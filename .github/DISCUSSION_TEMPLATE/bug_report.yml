@@ -1,0 +1,89 @@
+title: "Bug Report"
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🐛 Bug Report
+        Thanks for helping improve FUSED GAMING! Please fill out this form completely.
+        
+        **⚠️ Security Issues**: Do NOT report security vulnerabilities here. Email security@vln.gg instead.
+
+  - type: dropdown
+    id: product
+    attributes:
+      label: Product/Project
+      options:
+        - GambaReload
+        - Stablecoin Aggregators
+        - Wallet
+        - Other (specify below)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: chain
+    attributes:
+      label: Blockchain/Network
+      options:
+        - Ethereum Mainnet
+        - Polygon
+        - Arbitrum
+        - Optimism
+        - Base
+        - Other (specify below)
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: Clear description of what happened
+      placeholder: When I click X, Y happens instead of Z
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce this bug?
+      value: |
+        1. Go to...
+        2. Click on...
+        3. See error...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What should have happened?
+    validations:
+      required: true
+
+  - type: input
+    id: wallet
+    attributes:
+      label: Wallet Type
+      placeholder: MetaMask, WalletConnect, Coinbase Wallet, etc.
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser/Environment
+      placeholder: Chrome 120, Firefox, Mobile Safari, etc.
+
+  - type: input
+    id: txhash
+    attributes:
+      label: Transaction Hash (if applicable)
+      placeholder: "0x..."
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Screenshots, error messages, or other relevant info

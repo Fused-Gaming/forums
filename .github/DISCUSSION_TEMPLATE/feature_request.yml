@@ -1,0 +1,62 @@
+title: "Feature Request / Idea"
+labels: ["feat."]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 💡 Feature Request
+        We love hearing ideas from the community! Help us understand what you need.
+
+  - type: dropdown
+    id: product
+    attributes:
+      label: Product/Project
+      options:
+        - GambaReload
+        - Stablecoin Aggregators
+        - Wallet
+        - New Product Idea
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem are you trying to solve?
+      placeholder: I'm frustrated when...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: How would you like this to work?
+      placeholder: It would be great if...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: What other solutions have you tried or considered?
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: How important is this to you?
+      options:
+        - Nice to have
+        - Would significantly improve my experience
+        - Critical - blocking my use case
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Screenshots, mockups, or examples from other products

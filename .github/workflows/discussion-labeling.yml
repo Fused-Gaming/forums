@@ -1,0 +1,69 @@
+name: Discussion Auto-Labeling
+
+on:
+  discussion:
+    types: [created, edited]
+
+permissions:
+  discussions: write
+
+jobs:
+  auto-label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Auto-label based on category and content
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const discussion = context.payload.discussion;
+            const title = discussion.title.toLowerCase();
+            const body = (discussion.body || '').toLowerCase();
+            const category = discussion.category.name.toLowerCase();
+            const labels = [];
+
+            // Category-based labels
+            const categoryMap = {
+              'announcements': ['documentation'],
+              'investor relations': ['documentation', 'project-manager'],
+              'q&a': ['question', 'help wanted'],
+              'help': ['question', 'help wanted'],
+              'ideas': ['feat.'],
+              'feedback': ['feat.'],
+              'bug reports': ['bug'],
+              'bugs': ['bug']
+            };
+
+            for (const [cat, catLabels] of Object.entries(categoryMap)) {
+              if (category.includes(cat)) {
+                labels.push(...catLabels);
+              }
+            }
+
+            // Content-based labels
+            const contentPatterns = {
+              'front-end': ['ui', 'frontend', 'design', 'css', 'react', 'interface'],
+              'back-end': ['api', 'backend', 'database', 'server', 'contract'],
+              'devops': ['deploy', 'ci/cd', 'docker', 'infrastructure', 'cloudflare'],
+              'bug': ['crash', 'error', 'broken', 'not working', 'failed'],
+              'documentation': ['docs', 'documentation', 'readme', 'wiki', 'guide']
+            };
+
+            for (const [label, patterns] of Object.entries(contentPatterns)) {
+              if (patterns.some(p => title.includes(p) || body.includes(p))) {
+                if (!labels.includes(label)) {
+                  labels.push(label);
+                }
+              }
+            }
+
+            // Note: GitHub Discussions don't support labels natively via API
+            // This workflow logs recommended labels for manual application
+            // or can be used with discussion-to-issue conversion
+            
+            if (labels.length > 0) {
+              console.log(`Recommended labels for discussion #${discussion.number}: ${labels.join(', ')}`);
+              
+              // Add a hidden comment for moderators
+              const labelNote = `<!-- AUTO-LABEL SUGGESTION: ${labels.join(', ')} -->`;
+              console.log(labelNote);
+            }
