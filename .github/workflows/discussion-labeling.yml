@@ -21,7 +21,6 @@ jobs:
             const category = discussion.category.name.toLowerCase();
             const labels = [];
 
-            // Category-based labels
             const categoryMap = {
               'announcements': ['documentation'],
               'investor relations': ['documentation', 'project-manager'],
@@ -39,7 +38,6 @@ jobs:
               }
             }
 
-            // Content-based labels
             const contentPatterns = {
               'front-end': ['ui', 'frontend', 'design', 'css', 'react', 'interface'],
               'back-end': ['api', 'backend', 'database', 'server', 'contract'],
@@ -49,21 +47,14 @@ jobs:
             };
 
             for (const [label, patterns] of Object.entries(contentPatterns)) {
-              if (patterns.some(p => title.includes(p) || body.includes(p))) {
+              if (patterns.some(function(p) { return title.includes(p) || body.includes(p); })) {
                 if (!labels.includes(label)) {
                   labels.push(label);
                 }
               }
             }
-
-            // Note: GitHub Discussions don't support labels natively via API
-            // This workflow logs recommended labels for manual application
-            // or can be used with discussion-to-issue conversion
             
             if (labels.length > 0) {
-              console.log(`Recommended labels for discussion #${discussion.number}: ${labels.join(', ')}`);
-              
-              // Add a hidden comment for moderators
-              const labelNote = `<!-- AUTO-LABEL SUGGESTION: ${labels.join(', ')} -->`;
-              console.log(labelNote);
+              console.log('Recommended labels for discussion #' + discussion.number + ': ' + labels.join(', '));
+              console.log('<!-- AUTO-LABEL SUGGESTION: ' + labels.join(', ') + ' -->');
             }

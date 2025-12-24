@@ -20,20 +20,22 @@ jobs:
             const category = discussion.category.name.toLowerCase();
             const webhookUrl = process.env.DISCORD_WEBHOOK;
             
-            // Only notify for certain categories
             const notifyCategories = ['bug', 'investor', 'security'];
-            const shouldNotify = notifyCategories.some(c => category.includes(c));
+            const shouldNotify = notifyCategories.some(function(c) { return category.includes(c); });
             
             if (!shouldNotify || !webhookUrl) return;
             
+            const description = (discussion.body || '').slice(0, 200) + '...';
+            const embedColor = category.includes('bug') ? 0xd73a4a : 0x0075ca;
+            
             const embed = {
-              title: `New Discussion: ${discussion.title}`,
+              title: 'New Discussion: ' + discussion.title,
               url: discussion.html_url,
-              description: (discussion.body || '').slice(0, 200) + '...',
-              color: category.includes('bug') ? 0xd73a4a : 0x0075ca,
+              description: description,
+              color: embedColor,
               fields: [
                 { name: 'Category', value: discussion.category.name, inline: true },
-                { name: 'Author', value: `@${discussion.user.login}`, inline: true }
+                { name: 'Author', value: '@' + discussion.user.login, inline: true }
               ],
               timestamp: new Date().toISOString()
             };

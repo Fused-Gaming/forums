@@ -22,7 +22,6 @@ jobs:
             const discussion = context.payload.discussion;
             const body = discussion.body || '';
             
-            // Check for required information
             const hasChain = /chain|network|ethereum|polygon|arbitrum|optimism/i.test(body);
             const hasSteps = /steps|reproduce|how to/i.test(body);
             const hasExpected = /expected|should|supposed to/i.test(body);
@@ -33,31 +32,39 @@ jobs:
             if (!hasExpected) missing.push('expected behavior');
             
             if (missing.length > 0) {
-              const helpMessage = `## 📋 Additional Information Needed
-
-Thanks for reporting this issue! To help us investigate faster, please provide:
-
-${missing.map(m => `- [ ] ${m}`).join('\n')}
-
-**Template:**
-\`\`\`
-Chain/Network: 
-Steps to reproduce:
-1. 
-2. 
-3. 
-Expected behavior:
-Actual behavior:
-Transaction hash (if applicable):
-\`\`\``;
+              const checklist = missing.map(function(m) { return '- [ ] ' + m; }).join('\n');
               
-              await github.graphql(`
-                mutation($discussionId: ID!, $body: String!) {
-                  addDiscussionComment(input: {discussionId: $discussionId, body: $body}) {
-                    comment { id }
-                  }
-                }
-              `, {
+              const helpLines = [
+                '## 📋 Additional Information Needed',
+                '',
+                'Thanks for reporting this issue! To help us investigate faster, please provide:',
+                '',
+                checklist,
+                '',
+                '**Template:**',
+                '```',
+                'Chain/Network: ',
+                'Steps to reproduce:',
+                '1. ',
+                '2. ',
+                '3. ',
+                'Expected behavior:',
+                'Actual behavior:',
+                'Transaction hash (if applicable):',
+                '```'
+              ];
+              
+              const helpMessage = helpLines.join('\n');
+
+              const mutation = [
+                'mutation($discussionId: ID!, $body: String!) {',
+                '  addDiscussionComment(input: {discussionId: $discussionId, body: $body}) {',
+                '    comment { id }',
+                '  }',
+                '}'
+              ].join('\n');
+              
+              await github.graphql(mutation, {
                 discussionId: discussion.node_id,
                 body: helpMessage
               });
@@ -70,33 +77,41 @@ Transaction hash (if applicable):
           script: |
             const discussion = context.payload.discussion;
             
-            // Create an issue from the discussion
+            const issueBody = [
+              '**Converted from Discussion #' + discussion.number + '**',
+              '',
+              discussion.body,
+              '',
+              '---',
+              '*Original discussion: ' + discussion.html_url + '*',
+              '*Reported by: @' + discussion.user.login + '*'
+            ].join('\n');
+            
             const issue = await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `[Bug] ${discussion.title}`,
-              body: `**Converted from Discussion #${discussion.number}**
-
-${discussion.body}
-
----
-*Original discussion: ${discussion.html_url}*
-*Reported by: @${discussion.user.login}*`,
+              title: '[Bug] ' + discussion.title,
+              body: issueBody,
               labels: ['bug']
             });
+
+            const confirmMessage = [
+              '## ✅ Bug Confirmed',
+              '',
+              'This has been converted to an issue for tracking: #' + issue.data.number,
+              '',
+              'We will continue updates there. Thanks for reporting!'
+            ].join('\n');
             
-            // Comment on discussion with link to issue
-            await github.graphql(`
-              mutation($discussionId: ID!, $body: String!) {
-                addDiscussionComment(input: {discussionId: $discussionId, body: $body}) {
-                  comment { id }
-                }
-              }
-            `, {
+            const mutation = [
+              'mutation($discussionId: ID!, $body: String!) {',
+              '  addDiscussionComment(input: {discussionId: $discussionId, body: $body}) {',
+              '    comment { id }',
+              '  }',
+              '}'
+            ].join('\n');
+            
+            await github.graphql(mutation, {
               discussionId: discussion.node_id,
-              body: `## ✅ Bug Confirmed
-
-This has been converted to an issue for tracking: #${issue.data.number}
-
-We'll continue updates there. Thanks for reporting!`
+              body: confirmMessage
             });

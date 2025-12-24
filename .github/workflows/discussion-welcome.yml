@@ -17,10 +17,10 @@ jobs:
         with:
           script: |
             const author = context.payload.discussion.user.login;
-            const { data: discussions } = await github.rest.search.discussions({
-              q: `repo:${context.repo.owner}/${context.repo.repo} author:${author}`,
+            const repo = context.repo.owner + '/' + context.repo.repo;
+            const { data: discussions } = await github.rest.search.issuesAndPullRequests({
+              q: 'repo:' + repo + ' author:' + author + ' is:discussion',
             });
-            // If this is their only discussion, they're new
             return discussions.total_count <= 1;
           result-encoding: string
 
@@ -30,40 +30,51 @@ jobs:
         with:
           script: |
             const category = context.payload.discussion.category.name;
-            let welcomeMessage = `## 👋 Welcome to FUSED GAMING!
-
-Thanks for starting your first discussion here, @${context.payload.discussion.user.login}!
-
-**Quick links:**
-- 📜 [Community Guidelines](../blob/main/CODE_OF_CONDUCT.md)
-- 📖 [Wiki & Documentation](../wiki)
-- 🎮 [Discord](https://discord.gg/fusedgaming)
-
-`;
+            const username = context.payload.discussion.user.login;
             
+            const welcomeLines = [
+              '## 👋 Welcome to FUSED GAMING!',
+              '',
+              'Thanks for starting your first discussion here, @' + username + '!',
+              '',
+              '**Quick links:**',
+              '- 📜 [Community Guidelines](../blob/main/CODE_OF_CONDUCT.md)',
+              '- 📖 [Wiki & Documentation](../wiki)',
+              '- 🎮 [Discord](https://discord.gg/fusedgaming)',
+              ''
+            ];
+
             if (category.includes('Q&A') || category.includes('Help')) {
-              welcomeMessage += `**Tips for getting help faster:**
-- Include relevant details (chain, wallet, transaction hash if applicable)
-- Share what you've already tried
-- Check if your question was already answered in past discussions
-
-Our community members typically respond within 24 hours.`;
+              welcomeLines.push(
+                '**Tips for getting help faster:**',
+                '- Include relevant details (chain, wallet, transaction hash if applicable)',
+                '- Share what you have already tried',
+                '- Check if your question was already answered in past discussions',
+                '',
+                'Our community members typically respond within 24 hours.'
+              );
             } else if (category.includes('Ideas') || category.includes('Feedback')) {
-              welcomeMessage += `**For feature requests:**
-- Describe the problem you're trying to solve
-- Explain how your idea would help
-- Upvote similar ideas to help us prioritize
-
-We review community feedback weekly!`;
+              welcomeLines.push(
+                '**For feature requests:**',
+                '- Describe the problem you are trying to solve',
+                '- Explain how your idea would help',
+                '- Upvote similar ideas to help us prioritize',
+                '',
+                'We review community feedback weekly!'
+              );
             }
 
-            await github.graphql(`
-              mutation($discussionId: ID!, $body: String!) {
-                addDiscussionComment(input: {discussionId: $discussionId, body: $body}) {
-                  comment { id }
-                }
-              }
-            `, {
+            const welcomeMessage = welcomeLines.join('\n');
+            
+            const mutation = [
+              'mutation($discussionId: ID!, $body: String!) {',
+              '  addDiscussionComment(input: {discussionId: $discussionId, body: $body}) {',
+              '    comment { id }',
+              '  }',
+              '}'
+            ].join('\n');
+
+            await github.graphql(mutation, {
               discussionId: context.payload.discussion.node_id,
               body: welcomeMessage
             });
