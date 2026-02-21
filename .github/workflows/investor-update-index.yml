@@ -1,0 +1,44 @@
+name: Investor Update Index
+
+on:
+  discussion:
+    types: [labeled]
+
+permissions:
+  discussions: write
+
+jobs:
+  index:
+    runs-on: ubuntu-latest
+    if: github.event.label.name == 'investor-update'
+    steps:
+      - name: Post acknowledgment comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            var discussion = context.payload.discussion;
+
+            var archiveUrl = 'https://github.com/' + context.repo.owner + '/' + context.repo.repo
+              + '/discussions/categories/investor-relations';
+
+            var body = '### Investor Update Indexed\n\n'
+              + 'This update has been tagged as an official investor update and is now part of the '
+              + '[Investor Relations archive](' + archiveUrl + ').\n\n'
+              + '**For investors:** Browse all updates in the archive above, or filter by the '
+              + '`investor-update` label for a full history.\n\n'
+              + '**For the team:** Sensitive deal flow and financials belong in '
+              + '[Internal \u2192 Investor Pipeline](https://github.com/' + context.repo.owner
+              + '/forums-internal/discussions/categories/investor-pipeline).';
+
+            var mutation = 'mutation($discussionId: ID!, $body: String!) {'
+              + '  addDiscussionComment(input: { discussionId: $discussionId, body: $body }) {'
+              + '    comment { id }'
+              + '  }'
+              + '}';
+
+            await github.graphql(mutation, {
+              discussionId: discussion.node_id,
+              body: body
+            });
+
+            console.log('Indexed investor update: #' + discussion.number + ' - ' + discussion.title);

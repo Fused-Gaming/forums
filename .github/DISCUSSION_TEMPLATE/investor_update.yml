@@ -1,0 +1,61 @@
+title: "[Investor Update] Q? YYYY — "
+labels: ["investor-update"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Investor Update
+        Use this template for quarterly investor relations posts. This discussion is **publicly visible** but only maintainers may post. Keep sensitive financials and deal flow in the **Internal → Investor Pipeline** forum.
+
+  - type: input
+    id: period
+    attributes:
+      label: Reporting Period
+      placeholder: "Q1 2026"
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Executive Summary
+      description: 2–3 sentences on overall progress toward business goals.
+    validations:
+      required: true
+
+  - type: textarea
+    id: metrics
+    attributes:
+      label: Key Metrics
+      description: Core business indicators this quarter.
+      placeholder: |
+        - TVL: $X (↑Y% QoQ)
+        - Active Users: X
+        - Revenue: $X
+    validations:
+      required: true
+
+  - type: textarea
+    id: milestones
+    attributes:
+      label: Milestone Progress
+      description: Use checkboxes. Link to relevant announcements or PRs where possible.
+      placeholder: |
+        - [x] GambaReload v2 launch
+        - [ ] Polygon integration — 80% complete
+    validations:
+      required: true
+
+  - type: textarea
+    id: next_quarter
+    attributes:
+      label: Next Quarter Commitments
+      description: Specific, measurable goals for the next reporting period.
+    validations:
+      required: true
+
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks & Mitigations
+      description: Known blockers or risks and how they are being addressed. Omit confidential deal details — use Internal forum for those.
