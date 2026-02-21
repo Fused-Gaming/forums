@@ -1,0 +1,50 @@
+name: Quarterly Investor Update Reminder
+
+on:
+  schedule:
+    # First day of each quarter: Jan 1, Apr 1, Jul 1, Oct 1 at 09:00 UTC
+    - cron: '0 9 1 1,4,7,10 *'
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create reminder issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            var now = new Date();
+            var month = now.getMonth();
+            var year = now.getFullYear();
+
+            var quarters = ['Q1', 'Q2', 'Q3', 'Q4'];
+            var quarter = quarters[Math.floor(month / 3)];
+
+            var templateUrl = 'https://github.com/' + context.repo.owner + '/' + context.repo.repo
+              + '/discussions/new?category=investor-relations&template=investor_update.yml';
+
+            var body = '## Action Required: Post ' + quarter + ' ' + year + ' Investor Update\n\n'
+              + 'A new quarter has started. Please post the investor update to keep stakeholders informed '
+              + 'of progress toward business goals.\n\n'
+              + '**Steps:**\n'
+              + '1. Review last quarter metrics and milestone progress\n'
+              + '2. [Create the investor update discussion](' + templateUrl + ') using the template\n'
+              + '3. Cross-post sensitive deal details to '
+              + '[Internal \u2192 Investor Pipeline](https://github.com/' + context.repo.owner
+              + '/forums-internal/discussions/categories/investor-pipeline) as needed\n\n'
+              + '**Target:** Post within 2 weeks of quarter start.\n\n'
+              + 'Close this issue once the update is published.';
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Action: Post ' + quarter + ' ' + year + ' Investor Update',
+              body: body,
+              labels: ['investor-update']
+            });
+
+            console.log('Created reminder for ' + quarter + ' ' + year);
